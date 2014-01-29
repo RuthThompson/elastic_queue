@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name        = 'elastic-queue'
+  s.name        = 'elastic_queue'
   s.version     = '0.0.2'
   s.date        = '2014-01-28'
   s.summary     = 'A queueing system built on top of elasticsearch.'
