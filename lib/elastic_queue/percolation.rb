@@ -35,7 +35,7 @@ module ElasticQueue
     #   SEARCH_CLIENT.index index: '_percolator', type: 'dynamic_percolator', id: search_id, body: translate_opts_to_query_for_percolator(queue_opts), refresh: true
     #   search = SEARCH_CLIENT.percolate index: 'dynamic_percolator', body: body.to_json
     #   SEARCH_CLIENT.delete index: '_percolator', type: 'dynamic_percolator', id: search_id
-    #   search["matches"].length == 1
+    #   search['matches'].length == 1
     # end
 
   end

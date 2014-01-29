@@ -1,3 +1,7 @@
+require 'elasticsearch'
+require 'elastic_queue/persistence'
+require 'elastic_queue/query'
+
 module ElasticQueue
   class Base
     include Persistence
