@@ -1,3 +1,6 @@
+require 'elastic_queue/query_options'
+require 'elastic_queue/results'
+
 module ElasticQueue
   class Query
 

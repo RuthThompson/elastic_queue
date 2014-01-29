@@ -1,3 +1,6 @@
+require 'elastic_queue/filters'
+require 'elastic_queue/sorts'
+
 module ElasticQueue
   class QueryOptions
     include Filters
