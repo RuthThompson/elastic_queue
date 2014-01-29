@@ -1,0 +1,20 @@
+# This is the configuration rubocop, a ruby source code linter and checker.
+Documentation:
+  Description: 'Document classes and non-namespace modules.'
+  Enabled: false
+
+FinalNewline:
+  Description: 'Checks for a final newline in a source file.'
+  Enabled: false
+
+LineLength:
+  Description: 'Limit lines to 79 characters.'
+  Enabled: false
+
+MethodLength:
+  Description: 'Avoid methods longer than 10 lines of code.'
+  Enabled: false
+
+RescueModifier:
+  Description: 'Avoid using rescue in its modifier form.'
+  Enabled: false
