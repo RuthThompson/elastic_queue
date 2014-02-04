@@ -42,9 +42,8 @@ module ElasticQueue
     end
 
     def execute(count: false)
-      search_type = count ? 'count' : 'dfs_query_and_fetch'
+      search_type = count ? 'count' : 'query_then_fetch'
       begin
-        puts @options.body
         search = @queue.search_client.search index: @queue.index_name, body: @options.body, search_type: search_type, from: @options.from, size: @options.per_page
         # search[:page] = @page
         # search = substitute_page(opts, search) if !count && opts[:page_substitution_ok] && search['hits']['hits'].length == 0 && search['hits']['total'] != 0
