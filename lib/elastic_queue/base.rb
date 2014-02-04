@@ -33,7 +33,6 @@ module ElasticQueue
     end
 
     def self.eager_loads
-      raise NotImplementedError, "No eager_loads defined in #{self.class}" unless defined?(@eager_loads)
       @eager_loads
     end
 

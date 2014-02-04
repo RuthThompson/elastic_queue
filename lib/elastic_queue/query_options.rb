@@ -6,20 +6,15 @@ module ElasticQueue
     include Filters
     include Sorts
 
-    attr_reader :filters, :sorts, :page, :per_page, :from
+    attr_reader :filters, :sorts
+    attr_accessor :per_page
 
     def initialize(options = {})
-      @defaults = {
-        page: 1,
-        order: 'asc',
-        per_page: 30,
-        page_substitution_ok: true,
-      }.merge(options)
+      @options = { per_page: 30, page: 1 }.merge(options)
       @filters = { and: [] }.with_indifferent_access
       @sorts = []
-      @per_page = @defaults[:per_page].to_i
-      @page = @defaults[:page].to_i
-      @from = (@page - 1) * @per_page
+      self.per_page = @options[:per_page]
+      self.page = @options[:page]
     end
 
     def add_filter(options)
@@ -28,6 +23,18 @@ module ElasticQueue
 
     def add_sort(options)
       @sorts += options_to_sorts(options)
+    end
+
+    def from
+      (page - 1) * per_page
+    end
+
+    def page=(num)
+      @page = num.to_i unless num.blank?
+    end
+
+    def page
+      @page
     end
 
     def body
