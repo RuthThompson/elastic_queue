@@ -3,7 +3,6 @@ require 'will_paginate/collection'
 module ElasticQueue
 
   class Results
-    include Enumerable
 
     attr_reader :results
 
