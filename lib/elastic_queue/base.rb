@@ -1,11 +1,12 @@
 require 'elasticsearch'
 require 'elastic_queue/persistence'
+require 'elastic_queue/percolation'
 require 'elastic_queue/query'
 
 module ElasticQueue
   class Base
     include Persistence
-    # include Percolation
+    include Percolation
 
     def self.search_client
       Elasticsearch::Client.new
