@@ -42,6 +42,5 @@ module ElasticQueue
     def range_filter(term, value, comparator)
       { range: { term => { comparator => value } } }
     end
-
   end
 end

@@ -9,7 +9,6 @@ module ElasticQueue
     end
 
     module ClassMethods
-
       def queues(*queues)
         @queues ||= queues
       end
@@ -39,9 +38,8 @@ module ElasticQueue
         @not_analyzed_queue_attributes.each do |a|
           properties[a.to_sym] = { type: :string, index: :not_analyzed }
         end
-        { self.to_s.underscore.to_sym => { properties: properties } }
+        { to_s.underscore.to_sym => { properties: properties } }
       end
-
     end
 
     def indexed_for_queue
@@ -61,6 +59,5 @@ module ElasticQueue
     def remove_from_queue_indices
       self.class.queue_classes.each { |q| q.send(:remove_model, self) }
     end
-
   end
 end

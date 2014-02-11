@@ -3,7 +3,6 @@ require 'elastic_queue/results'
 
 module ElasticQueue
   class Query
-
     def initialize(queue, options = {})
       @queue = queue
       @options = QueryOptions.new(options)
@@ -41,7 +40,7 @@ module ElasticQueue
     end
 
     def page=(page)
-      @options.page=(page)
+      @options.page = (page)
     end
 
     def all
@@ -68,7 +67,5 @@ module ElasticQueue
     def failed_search
       { page: 0, hits: { hits: [], total: 0 } }
     end
-
   end
-
 end

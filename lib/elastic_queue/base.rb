@@ -17,7 +17,7 @@ module ElasticQueue
     end
 
     def self.model_names
-      raise NotImplementedError, "No models defined in #{self.class}" unless defined?(@models)
+      fail NotImplementedError, "No models defined in #{self.class}" unless defined?(@models)
       @models
     end
 
@@ -48,6 +48,5 @@ module ElasticQueue
     def self.count
       query.count
     end
-
   end
 end
