@@ -25,6 +25,7 @@ module ElasticQueue
     end
 
     def or_filter(term, values)
+      # flatten here because ranges return arrays
       conditions = values.map { |v| option_to_filter(term, v) }.flatten
       { or: conditions }
     end
