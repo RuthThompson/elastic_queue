@@ -17,13 +17,17 @@ module ElasticQueue
       elsif value.is_a? Hash
         # date?
         time_filter(key, value)
+      elsif value.nil?
+        null_filter(key, value)
       else
         term_filter(key, value)
       end
     end
 
     def or_filter(term, values)
-      { or: values.map { |v| term_filter(term, v) } }
+      # flatten here because ranges return arrays
+      conditions = values.map { |v| option_to_filter(term, v) }.flatten
+      { or: conditions }
     end
 
     def term_filter(term, value)
@@ -42,5 +46,10 @@ module ElasticQueue
     def range_filter(term, value, comparator)
       { range: { term => { comparator => value } } }
     end
+
+    def null_filter(term, value)
+      { missing: { field: term, existence: true, null_value: true } }
+    end
+
   end
 end

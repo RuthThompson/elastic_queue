@@ -56,6 +56,12 @@ module ElasticQueue
       @results ||= Results.new(@queue, execute, @options)
     end
 
+    # return just the ids of the records (useful when combined with SQL queries)
+    def ids
+      results = execute
+      results[:hits][:hits].map { |h| h[:_source][:id] }
+    end
+
     def count
       res = execute(count: true)
       res[:hits][:total].to_i
