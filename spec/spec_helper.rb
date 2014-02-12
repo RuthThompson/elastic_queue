@@ -1,7 +1,6 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'rspec'
 require 'rspec/autorun'
-
 require 'factory_girl'
 require File.expand_path('../../lib/elastic_queue', __FILE__)
 require 'support/elastic_queue_helper'
