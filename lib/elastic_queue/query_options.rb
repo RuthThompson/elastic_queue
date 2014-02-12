@@ -48,7 +48,7 @@ module ElasticQueue
     def percolator_body
       b = {}
       b[:filter] = @filters unless @filters[:and].blank?
-      { 'query' => { 'constant_score' => b } }
+      { query: { constant_score: b } }
     end
   end
 end
