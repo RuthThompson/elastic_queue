@@ -6,7 +6,7 @@ module ElasticQueue
     include Filters
     include Sorts
 
-    attr_reader :filters, :sorts
+    attr_reader :filters, :sorts, :page
     attr_accessor :per_page
 
     def initialize(options = {})
@@ -33,10 +33,6 @@ module ElasticQueue
       @page = num.to_i unless num.blank?
     end
 
-    def page
-      @page
-    end
-
     def body
       b = {}
       b[:filter] = @filters unless @filters[:and].blank?
@@ -44,5 +40,10 @@ module ElasticQueue
       b
     end
 
+    def percolator_body
+      b = {}
+      b[:filter] = @filters unless @filters[:and].blank?
+      { 'query' => { 'constant_score' => b } }
+    end
   end
 end

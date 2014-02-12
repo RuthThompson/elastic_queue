@@ -1,25 +1,19 @@
 require 'will_paginate/collection'
 
 module ElasticQueue
-
   class Results
-    include Enumerable
+    attr_reader :paginate
 
-    attr_reader :results
-
+    delegate :empty?, :each, :total_entries, :total_pages, :current_page, to: :paginate
     def initialize(queue, search_results, query_options)
       @queue = queue
       @instantiated_queue_items = instantiate_queue_items(search_results)
       @start = query_options.page
       @per_page = query_options.per_page
       @total = search_results[:hits][:total]
-      @results = WillPaginate::Collection.create(@start, @per_page, @total) do |pager|
+      @paginate = WillPaginate::Collection.create(@start, @per_page, @total) do |pager|
         pager.replace(@instantiated_queue_items)
       end
-    end
-
-    def paginate
-      @results
     end
 
     def instantiate_queue_items(search_results)
@@ -63,6 +57,5 @@ module ElasticQueue
         sort_order["#{a.class.name.underscore}_#{a.id}"] <=> sort_order["#{b.class.name.underscore}_#{b.id}"]
       end
     end
-
   end
 end

@@ -3,7 +3,6 @@ module ElasticQueue
   module Persistence
     extend ActiveSupport::Concern
     module ClassMethods
-
       def index_exists?
         search_client.indices.exists index: index_name
       end
@@ -61,8 +60,6 @@ module ElasticQueue
       def remove_model(instance)
         search_client.delete index: index_name, id: instance.id, type: instance.class.to_s.underscore
       end
-
     end
-
   end
 end
