@@ -56,6 +56,12 @@ module ElasticQueue
       @results ||= Results.new(@queue, execute, @options)
     end
 
+    # return just the ids of the records (useful when combined with SQL queries)
+    def ids
+      results = execute
+      results[:hits][:hits].map { |h| h[:_source][:id] }
+    end
+
     def count
       res = execute(count: true)
       res[:hits][:total].to_i
@@ -65,7 +71,6 @@ module ElasticQueue
       search_type = count ? 'count' : 'query_then_fetch'
       begin
         search = @queue.search_client.search index: @queue.index_name, body: body, search_type: search_type, from: @options.from, size: @options.per_page
-        # search[:page] = @page
         # search = substitute_page(opts, search) if !count && opts[:page_substitution_ok] && search['hits']['hits'].length == 0 && search['hits']['total'] != 0
       rescue Elasticsearch::Transport::Transport::Errors::BadRequest
         search = failed_search
