@@ -1,4 +1,8 @@
 FactoryGirl.define do
+  
+  sequence :vegetable_id do |n| n end
+  sequence :soup_id do |n| n end
+    
   sequence :vegetable_peice_size  do
     ['tiny', 'small', 'medium', 'large', 'whole'].sample
   end
@@ -8,14 +12,15 @@ FactoryGirl.define do
   end
 
   factory :vegetable do
+    id  { generate(:vegetable_id) }
     name { generate(:vegetable_name) }
     peice_size { generate(:vegetable_peice_size) }
     expires_at Time.parse('2014-06-02 08:40:33')
   end
 
   factory :soup do
+    id  { generate(:soup_id) }
     name 'vegetable soup'
-    vegetable
     temperature 100
     status 'boiling on stove'
   end

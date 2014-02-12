@@ -1,12 +1,34 @@
 require 'rubygems'
-require 'active_record'
 require 'sqlite3'
+require 'active_record'
 require 'elasticsearch'
 require 'spec_helper'
+require_relative '../factories'
 
 describe 'searching:' do
   
   before(:all) do
+    @db = SQLite3::Database.new('test.db')
+    @db.execute('
+      CREATE TABLE vegetables(
+      id INT PRIMARY KEY NOT NULL,
+      name VARCHAR(20),
+      status VARCHAR(20),
+      peice_size VARCHAR(20),
+      expires_at DATE)'
+    )
+    @db.execute('
+      CREATE TABLE soups(
+      id INT PRIMARY KEY NOT NULL,
+      name VARCHAR(20),
+      status VARCHAR(20),
+      temperature INT)'
+    )
+    ActiveRecord::Base.establish_connection(
+      :adapter => 'sqlite3',
+      :database => 'test.db'
+    )
+
     class Soup < ActiveRecord::Base
     end
 
@@ -33,30 +55,26 @@ describe 'searching:' do
   end
 
   after(:all) do
-    Soup.all.each(&:delete)
-    Vegetable.all.each(&:delete)
+    ActiveRecord::Base.connection.close
+    @db.execute('DROP TABLE vegetables')
+    @db.execute('DROP TABLE soups')
     test_search_client.indices.delete index: 'test_queue'
   end
 
-  describe '#search' do
+  describe ElasticQueue::Query do
+    describe '#search' do
+      it 'returns no results when appropriate' do
+        expect(@test_queue.query.search('Wrong Name').count).to be(0)
+      end
 
-    it 'returns an ElasticQueue::Results object' do
-      expect(@test_queue.search('vegetable soup').execute.class).to be(ElasticQueue::Results)
+      it 'returns results when appropriate' do
+        a = Vegetable.first()
+        expect(@test_queue.query.search(a.name).count > 0).to be(true)
+      end
     end
-
-    it 'searches' do
-      a = Vegetable.first
-      name = a.name
-      b = Vegetable.second
-      b.name = 'Mystery Vegetable'
-      b.save
-      refresh_index
-      expect(@test_queue.search(name).count > 0).to be(true)
-    end
-
-    it 'searches a search string against specific search fields' do
-      pending 'yagni'
-    end
+    
+    
+  end
 
     # it 'eager loads models when asked to' do
     #   expect(@test_queue.search('Testy Testerson', {}, { agent_fee_sales_session: :agent }).first.association(:agent).loaded?).to be(true)
@@ -86,7 +104,7 @@ describe 'searching:' do
     #   expect(order_desc.reverse).to eq(order_asc)
     # end
 
-  end
+  # end
 
 #   describe '#queue' do
 # 
