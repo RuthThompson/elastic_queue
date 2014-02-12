@@ -63,8 +63,8 @@ module ElasticQueue
 
     def execute(count: false)
       begin
-          search = execute_query(count: false)
-          search = substitute_page(search) if !count && search['hits']['hits'].length == 0 && search['hits']['total'] != 0
+        search = execute_query(count: false)
+        search = substitute_page(search) if !count && search['hits']['hits'].length == 0 && search['hits']['total'] != 0
       rescue Elasticsearch::Transport::Transport::Errors::BadRequest
         search = failed_search
       end
@@ -80,12 +80,8 @@ module ElasticQueue
 
     def substitute_page(search)
       total_hits = search['hits']['total'].to_i
-      per_page = @options.per_page.to_i
-      results_on_last_page = total_hits % per_page # remainder of results will be on last page
-      results_on_last_page = per_page if results_on_last_page == 0 # unless the remainder is zero
-      last_page = (total_hits / per_page.to_f).ceil
-      last_page_start = total_hits - results_on_last_page
-      @options.page = last_page
+      per_page = @options.per_page
+      @options.page = (total_hits / per_page.to_f).ceil
       execute_query
     end
 
