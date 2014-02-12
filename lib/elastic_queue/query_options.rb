@@ -6,7 +6,7 @@ module ElasticQueue
     include Filters
     include Sorts
 
-    attr_reader :filters, :sorts, :page
+    attr_reader :filters, :sorts, :page, :search
     attr_accessor :per_page
 
     def initialize(options = {})
@@ -25,6 +25,10 @@ module ElasticQueue
       @sorts += options_to_sorts(options)
     end
 
+    def add_search(string)
+      @search = string
+    end
+
     def from
       (page - 1) * per_page
     end
@@ -37,6 +41,7 @@ module ElasticQueue
       b = {}
       b[:filter] = @filters unless @filters[:and].blank?
       b[:sort] = @sorts unless @sorts.blank?
+      b[:query] = { query_string: { query: @search } } unless @search.blank?
       b
     end
 

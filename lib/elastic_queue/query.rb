@@ -26,6 +26,15 @@ module ElasticQueue
       @options.sorts
     end
 
+    def search(string)
+      @options.add_search(string)
+      self
+    end
+
+    def searches
+      @options.search
+    end
+
     def body
       @options.body
     end
