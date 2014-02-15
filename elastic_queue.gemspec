@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*.rb']
 
   s.add_dependency 'activesupport'
-  s.add_dependency 'elasticsearch', '~>0.4.7'
+  s.add_dependency 'elasticsearch', '~>0.4.1'
   s.add_dependency 'will_paginate'
   s.add_development_dependency 'bundler', '>= 1.0.0'
   s.add_development_dependency 'rake'
