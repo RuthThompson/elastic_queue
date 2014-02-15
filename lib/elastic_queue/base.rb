@@ -9,7 +9,8 @@ module ElasticQueue
     include Percolation
 
     def self.search_client
-      Elasticsearch::Client.new
+      hosts = OPTS['elasticsearch_hosts'].nil? ? [{ host: 'localhost', port: 9200, protocol: 'http' }] : OPTS['elasticsearch_hosts']
+      Elasticsearch::Client.new hosts: hosts
     end
 
     def self.models(*models)
