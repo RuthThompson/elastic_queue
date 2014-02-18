@@ -31,7 +31,6 @@ module ElasticQueue
         search_client.delete index: '_percolator', type: 'dynamic_percolator', id: search_id
         search
       end
-
     end
 
     def in_queue?(model)

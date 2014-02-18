@@ -50,6 +50,5 @@ module ElasticQueue
     def null_filter(term, value)
       { missing: { field: term, existence: true, null_value: true } }
     end
-
   end
 end
