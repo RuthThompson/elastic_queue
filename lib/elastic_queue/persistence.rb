@@ -58,7 +58,11 @@ module ElasticQueue
       end
 
       def remove_model(instance)
-        search_client.delete index: index_name, id: instance.id, type: instance.class.to_s.underscore
+        begin
+          search_client.delete index: index_name, id: instance.id, type: instance.class.to_s.underscore
+        rescue Elasticsearch::Transport::Transport::Errors::NotFound
+          # just say you deleted it if it's not there!
+        end
       end
     end
   end
