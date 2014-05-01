@@ -1,18 +1,32 @@
 module ElasticQueueHelper
+  ElasticQueue::OPTIONS = { elasticsearch_hosts: [{ host: 'localhost', port: 9200, protocol: 'http' }] }
 
   TEST_SEARCH_CLIENT = Elasticsearch::Client.new
-  
+
   def test_search_client
     TEST_SEARCH_CLIENT
   end
 
-  def refresh_index
-    # forces the index to refresh itself so the search doesn't happen before the models are done being added to the index
-    TEST_SEARCH_CLIENT.indices.refresh index: 'test_queue'
+  def create_index(index_name)
+    if test_search_client.indices.exists index: index_name
+      delete_index(index_name)
+    end
+    test_search_client.indices.create index: index_name
   end
 
-  def query_all
+  def delete_index(index_name)
+    if test_search_client.indices.exists index: index_name
+      test_search_client.indices.delete index: index_name
+    end
+  end
+
+  def refresh_index
+    # forces the index to refresh itself so the search doesn't happen before the models are done being added to the index
+    test_search_client.indices.refresh index: 'test_animals_queue'
+  end
+
+  def query_all(index_name)
     query = { 'query' => {'match_all' => {} } }.to_json
-    TEST_SEARCH_CLIENT.search index: 'test_queue', body: query, size: 500
+    test_search_client.search index: index_name, body: query, size: 500
   end
 end
