@@ -18,12 +18,12 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split("\n")
   s.test_files = Dir['spec/**/*.rb']
 
-  s.add_dependency 'activesupport'
-  s.add_dependency 'elasticsearch', '~>0.4.1'
-  s.add_dependency 'will_paginate'
-  s.add_development_dependency 'bundler', '>= 1.0.0'
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'sqlite3'
-  s.add_development_dependency 'factory_girl'
+  s.add_runtime_dependency 'activesupport', '~> 3.0'
+  s.add_runtime_dependency 'elasticsearch', '~> 0.4'
+  s.add_runtime_dependency 'will_paginate', '~> 3.0'
+  s.add_development_dependency 'bundler', '~> 1.0'
+  s.add_development_dependency 'rspec', '~> 2.6'
+  s.add_development_dependency 'factory_girl', '~> 4.0'
+  s.add_development_dependency 'sqlite3', '~> 1.3'
+  s.add_development_dependency 'rake', '~> 10.0'
 end

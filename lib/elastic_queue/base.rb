@@ -29,6 +29,10 @@ module ElasticQueue
       @index_name ||= to_s.underscore
     end
 
+    def self.index_name=(name)
+      @index_name = name
+    end
+
     def self.eager_load(includes)
       @eager_loads = includes
     end
@@ -37,8 +41,32 @@ module ElasticQueue
       @eager_loads
     end
 
-    def self.query(options = {})
-      Query.new(self, options)
+    def self.default_scope(proc)
+      @default_scope = proc
+    end
+
+    def self.scope(name, body)
+      @scopes.merge(name => body)
+    end
+
+    def self.scopes
+      @scopes ||= {}
+    end
+
+    # we want to store the scope in our scopes hash
+    # for use in chaining scopes
+    # we also define it on the class to mimic AR scopes
+    def self.scope(name, body)
+      scopes.merge! name => body
+      singleton_class.send(:define_method, name) do |*args|
+        query.instance_exec(*args, &body)
+      end
+    end
+
+    def self.query
+      Query.new(self).tap do |q|
+        q.instance_exec(&@default_scope) if @default_scope
+      end
     end
 
     def self.filter(options)
@@ -48,5 +76,11 @@ module ElasticQueue
     def self.count
       query.count
     end
+
+    # instance methods
+    def query
+      @query ||= self.class.query
+    end
+
   end
 end
