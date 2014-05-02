@@ -6,7 +6,7 @@ describe ElasticQueue::Persistence do
       include ElasticQueue::Queueable
       queues :test_animals_queue
       queue_attributes :dangerous, :cute, :birthdate
-      not_analyzed_queue_attributes :name, :species, :description
+      not_analyzed_queue_attributes :species, :description, :name
     end
   
     class TestAnimalsQueue < ElasticQueue::Base
@@ -20,6 +20,7 @@ describe ElasticQueue::Persistence do
 
   describe '#index_exists?' do
     it 'gives false when its index doesnt exist' do
+      delete_index('test_animals_queue')
       expect(TestAnimalsQueue.index_exists?).to be false
     end
 

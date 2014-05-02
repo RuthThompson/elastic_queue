@@ -13,7 +13,7 @@ module ElasticQueue
       end
 
       def create_index
-        search_client.indices.create index: index_name
+        search_client.indices.create index: index_name, body: default_index_settings
         add_mappings
       end
 
@@ -39,6 +39,19 @@ module ElasticQueue
             search_client.bulk body: body
           end
         end
+      end
+
+      def default_index_settings
+        { settings: {
+            analysis: {
+              analyzer: {
+                default: {
+                  type: :simple
+                }
+              }
+            }
+          }
+        }
       end
 
       def add_mappings
