@@ -1,11 +1,11 @@
 PATH
   remote: .
   specs:
-    elastic_queue (0.0.9)
-      activerecord (~> 3.2.0)
-      activesupport (~> 3.2.0)
-      elasticsearch (~> 0.4.1)
-      will_paginate
+    elastic_queue (0.0.10)
+      activerecord (~> 3.0)
+      activesupport (~> 3.0)
+      elasticsearch (~> 0.4)
+      will_paginate (~> 3.0)
 
 GEM
   remote: https://rubygems.org/
@@ -63,10 +63,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (>= 1.0.0)
-  debugger
+  bundler (~> 1.0)
+  debugger (~> 1.6)
   elastic_queue!
-  factory_girl
-  rake
-  rspec
-  sqlite3
+  factory_girl (~> 4.0)
+  rake (~> 10.0)
+  rspec (~> 2.6)
+  sqlite3 (~> 1.3)
