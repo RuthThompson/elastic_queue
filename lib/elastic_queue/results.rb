@@ -4,7 +4,7 @@ module ElasticQueue
   class Results
     attr_reader :paginate
 
-    delegate :empty?, :each, :total_entries, :total_pages, :current_page, to: :paginate
+    delegate :empty?, :each, :total_entries, :total_pages, :map, :current_page, to: :paginate
 
     def initialize(queue, search_results, query_options)
       @queue = queue

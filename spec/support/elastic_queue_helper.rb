@@ -20,9 +20,9 @@ module ElasticQueueHelper
     end
   end
 
-  def refresh_index
+  def refresh_index(index_name)
     # forces the index to refresh itself so the search doesn't happen before the models are done being added to the index
-    test_search_client.indices.refresh index: 'test_animals_queue'
+    test_search_client.indices.refresh index: index_name
   end
 
   def query_all(index_name)
