@@ -79,6 +79,16 @@ module ElasticQueue
 
     private
 
+    # this allows you to chain scopes
+    # the 2+ scopes in the chain will be called
+    # on a query object and not on the base object
+    def method_missing(method, *args, &block)
+      if @queue.respond_to?(method)
+        proc = @queue.scopes[method]
+        instance_exec *args, &proc
+      end
+    end
+
     def execute_query(count: false)
       search_type = count ? 'count' : 'query_then_fetch'
       @queue.search_client.search index: @queue.index_name, body: body, search_type: search_type, from: @options.from, size: @options.per_page
