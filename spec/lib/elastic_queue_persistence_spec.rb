@@ -10,7 +10,7 @@ describe ElasticQueue::Persistence do
     end
   
     class TestAnimalsQueue < ElasticQueue::Base
-      models :animals
+      models :animal
     end
   end
 
@@ -35,7 +35,11 @@ describe ElasticQueue::Persistence do
   end
 
   describe '#create_index' do
-    pending
+    it 'sets the default analyzer to simple' do
+      TestAnimalsQueue.create_index
+      expect(`curl -XGET 'localhost:9200/test_animals_queue/_analyze?' -d 'AND OR'`)
+      .to eq('{"tokens":[{"token":"and","start_offset":0,"end_offset":3,"type":"word","position":1},{"token":"or","start_offset":4,"end_offset":6,"type":"word","position":2}]}')
+    end
   end
 
   describe '#delete_index' do

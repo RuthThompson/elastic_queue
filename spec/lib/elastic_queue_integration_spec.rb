@@ -54,34 +54,19 @@ describe ElasticQueue do
     end
 
     it 'sorts ascending and descending on one value' do
-      Animal.create({ name: 'aa', birthdate: Date.today.at_midnight - 1.year })
-      Animal.create({ name: 'bb', birthdate: Date.today.at_midnight - 2.years })
-      Animal.create({ name: 'cc', birthdate: Date.today.at_midnight - 3.years })
-      expect(TestAnimalsQueue.query.sort(birthdate: 'asc').all.map(&:name)).to eq ['cc', 'bb', 'aa']
-      expect(TestAnimalsQueue.query.sort(birthdate: 'desc').all.map(&:name)).to eq ['aa', 'bb', 'cc']
+      Animal.create({ name: 'a', birthdate: Date.today.at_midnight - 1.year })
+      Animal.create({ name: 'b', birthdate: Date.today.at_midnight - 2.years })
+      Animal.create({ name: 'c', birthdate: Date.today.at_midnight - 3.years })
+      expect(TestAnimalsQueue.query.sort(birthdate: 'asc').all.map(&:name)).to eq ['c', 'b', 'a']
+      expect(TestAnimalsQueue.query.sort(birthdate: 'desc').all.map(&:name)).to eq ['a', 'b', 'c']
     end
 
     it 'sorts ascending and descending on two values' do
-      Animal.create({ name: 'aa', birthdate: Date.today.at_midnight - 1.year })
-      Animal.create({ name: 'bb', birthdate: Date.today.at_midnight - 1.years })
-      Animal.create({ name: 'cc', birthdate: Date.today.at_midnight - 3.years })
-      expect(TestAnimalsQueue.query.sort(birthdate: 'asc' ).sort(name: 'asc').all.map(&:name)).to eq ['cc', 'aa', 'bb']
-      expect(TestAnimalsQueue.query.sort(birthdate: 'asc' ).sort(name: 'desc').all.map(&:name)).to eq ['cc', 'bb', 'aa']
+      Animal.create({ name: 'a', birthdate: Date.today.at_midnight - 1.year })
+      Animal.create({ name: 'b', birthdate: Date.today.at_midnight - 1.years })
+      Animal.create({ name: 'c', birthdate: Date.today.at_midnight - 3.years })
+      expect(TestAnimalsQueue.query.sort(birthdate: 'asc' ).sort(name: 'asc').all.map(&:name)).to eq ['c', 'a', 'b']
+      expect(TestAnimalsQueue.query.sort(birthdate: 'asc' ).sort(name: 'desc').all.map(&:name)).to eq ['c', 'b', 'a']
     end
   end
-
-  describe 'mapping' do
-    it 'does not ignore stopwords' do
-      Animal.create( { name: 'or' })
-      Animal.create( { name: 'and' })
-      delete_index('test_animals_queue')
-      TestAnimalsQueue.bulk_index
-      refresh_index('test_animals_queue')
-      puts `curl -XGET 'http://localhost:9200/test_animals_queue/_mapping?pretty=true'`
-      asc = TestAnimalsQueue.query.sort(name: 'asc').all.map(&:name)
-      desc = TestAnimalsQueue.query.sort(name: 'desc').all.map(&:name)
-      expect(asc).not_to eq desc
-    end
-  end
-    
 end
