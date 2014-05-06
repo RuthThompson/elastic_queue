@@ -56,7 +56,8 @@ module ElasticQueue
 
       def add_mappings
         model_classes.each do |klass|
-          search_client.indices.put_mapping index: index_name, type: klass.to_s.underscore, body: klass.queue_mapping
+          mapping = klass.queue_mapping
+          search_client.indices.put_mapping index: index_name, type: klass.to_s.underscore, body: mapping if mapping.present?
         end
       end
 

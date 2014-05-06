@@ -45,7 +45,7 @@ describe ElasticQueue do
 
   describe 'sorting' do 
     before :each do
-      create_index('test_animals_queue')
+      TestAnimalsQueue.create_index
     end
 
     after :each do
@@ -65,8 +65,15 @@ describe ElasticQueue do
       Animal.create({ name: 'a', birthdate: Date.today.at_midnight - 1.year })
       Animal.create({ name: 'b', birthdate: Date.today.at_midnight - 1.years })
       Animal.create({ name: 'c', birthdate: Date.today.at_midnight - 3.years })
-      expect(TestAnimalsQueue.query.sort(birthdate: 'asc' ).sort(name: 'asc').all.map(&:name)).to eq ['c', 'a', 'b']
-      expect(TestAnimalsQueue.query.sort(birthdate: 'asc' ).sort(name: 'desc').all.map(&:name)).to eq ['c', 'b', 'a']
+      expect(TestAnimalsQueue.query.sort(birthdate: 'asc', name: 'asc').all.map(&:name)).to eq ['c', 'a', 'b']
+      expect(TestAnimalsQueue.query.sort(birthdate: 'asc', name: 'desc').all.map(&:name)).to eq ['c', 'b', 'a']
+    end
+
+    it 'doesn\t fail to sort because of stopwords' do
+      Animal.create({ name: 'and' })
+      Animal.create({ name: 'or' })
+      Animal.create({ name: 'if' })
+      expect(TestAnimalsQueue.query.sort(name: 'asc').all.map(&:name)).to eq ['and', 'if', 'or']
     end
   end
 end
