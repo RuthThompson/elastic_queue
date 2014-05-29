@@ -45,7 +45,7 @@ module ElasticQueue
 
     def paginate(options = {})
       options.each { |k, v| @options.send("#{k}=", v) }
-      all.paginate
+      Results.new(@queue, execute(paginate: true), @options).paginate
     end
 
     def page=(page)
@@ -53,7 +53,7 @@ module ElasticQueue
     end
 
     def all
-      @results ||= Results.new(@queue, execute, @options)
+      Results.new(@queue, execute, @options).instantiated_queue_items
     end
 
     # return just the ids of the records (useful when combined with SQL queries)
@@ -63,14 +63,14 @@ module ElasticQueue
     end
 
     def count
-      res = execute(count: true)
+      res = execute(count: true, paginate: false)
       res[:hits][:total].to_i
     end
 
-    def execute(count: false)
+    def execute(count: false, paginate: false)
       begin
-        search = execute_query(count: false)
-        search = substitute_page(search) if !count && search['hits']['hits'].length == 0 && search['hits']['total'] != 0
+        search = paginate ? execute_paginated_query : execute_all_query( count: count )
+        search = substitute_page(search) if paginate && !count && search['hits']['hits'].length == 0 && search['hits']['total'] != 0
       rescue Elasticsearch::Transport::Transport::Errors::BadRequest
         search = failed_search
       end
@@ -89,16 +89,26 @@ module ElasticQueue
       end
     end
 
-    def execute_query(count: false)
-      search_type = count ? 'count' : 'query_then_fetch'
-      @queue.search_client.search index: @queue.index_name, body: body, search_type: search_type, from: @options.from, size: @options.per_page
+    # def execute_all_query(count: false)
+    #   search_type = count ? 'count' : 'query_then_fetch'
+    #   @queue.search_client.search index: @queue.index_name, body: body, search_type: search_type
+    # end
+
+    def execute_all_query(count: false)
+      record_count = @queue.search_client.search index: @queue.index_name, body: body, search_type: 'count'
+      return record_count if count
+      @queue.search_client.search index: @queue.index_name, body: body, search_type: 'query_then_fetch', from: 0, size: record_count['hits']['total'].to_i
+    end
+
+    def execute_paginated_query
+      @queue.search_client.search index: @queue.index_name, body: body, search_type: 'query_then_fetch', from: @options.from, size: @options.per_page
     end
 
     def substitute_page(search)
       total_hits = search['hits']['total'].to_i
       per_page = @options.per_page
       @options.page = (total_hits / per_page.to_f).ceil
-      execute_query
+      execute_paginated_query
     end
 
     def failed_search
