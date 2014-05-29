@@ -26,12 +26,12 @@ module ElasticQueue
         search_client.indices.refresh index: index_name
       end
 
-      def bulk_index(batch_size = 10_000)
+      def bulk_index(scopes: {}, batch_size: 10_000)
         create_index unless index_exists?
         model_classes.each do |klass|
           # modelclass(model).includes(associations_for_index(model)).
           index_type = klass.to_s.underscore
-          klass.find_in_batches(batch_size: batch_size) do |batch|
+          scoped_class(klass, scopes).find_in_batches(batch_size: batch_size) do |batch|
             body = []
             batch.each do |instance|
               body << { index: { _index: index_name, _id: instance.id, _type: index_type, data: instance.indexed_for_queue } }
@@ -39,6 +39,14 @@ module ElasticQueue
             search_client.bulk body: body
           end
         end
+      end
+
+      def scoped_class(klass, scopes)
+        return klass unless scopes[klass.to_s.underscore.to_sym]
+        scopes[klass.to_s.underscore.to_sym].each do |scope|
+          klass = klass.send(scope)
+        end
+        klass
       end
 
       def default_index_settings

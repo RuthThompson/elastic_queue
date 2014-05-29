@@ -47,7 +47,31 @@ describe ElasticQueue::Persistence do
   end
   
   describe '#bulk_index' do
-    pending
+    before :all do
+      ActiveRecord::Base.connection.execute("INSERT INTO animals (name, species)
+                                             VALUES ('pom-pom', 'dog'), ('fluffy', 'dog'), ('muffy', 'cat');")
+    end
+    it 'creates the index if one doesn\t exist' do
+      expect(test_search_client.indices.exists index: 'test_animals_queue').to be false
+      TestAnimalsQueue.bulk_index
+      expect(test_search_client.indices.exists index: 'test_animals_queue').to be true
+    end
+
+    it 'indexes all existing models' do
+      TestAnimalsQueue.bulk_index
+      refresh_index('test_animals_queue')
+      expect(query_all('test_animals_queue')['hits']['total']).to be 3
+    end
+
+    it 'takes scopes' do
+      class Animal < ActiveRecord::Base
+        scope :not_fluffy, where("name != 'fluffy'")
+        scope :only_dogs, where(species: 'dog')
+      end
+      TestAnimalsQueue.bulk_index(scopes: { animal: [:not_fluffy, :only_dogs], some_other_model: [:this_wont_get_called] })
+      refresh_index('test_animals_queue')
+      expect(query_all('test_animals_queue')['hits']['total']).to be 1
+    end
   end
 
   describe '#add_mappings' do
