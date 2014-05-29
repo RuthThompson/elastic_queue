@@ -9,7 +9,7 @@ module ElasticQueue
     include Percolation
 
     def self.search_client
-      Elasticsearch::Client.new hosts: ElasticQueue::OPTIONS[:elasticsearch_hosts]
+      @search_client ||= Elasticsearch::Client.new hosts: ElasticQueue::OPTIONS[:elasticsearch_hosts]
     end
 
     def self.models(*models)

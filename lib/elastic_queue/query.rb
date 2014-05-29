@@ -48,6 +48,7 @@ module ElasticQueue
       Results.new(@queue, execute(paginate: true), @options).paginate
     end
 
+    # TODO: remove if not using, add per_page if using
     def page=(page)
       @options.page = (page)
     end
@@ -58,14 +59,14 @@ module ElasticQueue
 
     # return just the ids of the records (useful when combined with SQL queries)
     def ids
-      results = execute
-      results[:hits][:hits].map { |h| h[:_source][:id] }
+      execute[:hits][:hits].map { |h| h[:_source][:id] }
     end
 
     def count
-      res = execute(count: true, paginate: false)
-      res[:hits][:total].to_i
+      execute(count: true, paginate: false)[:hits][:total].to_i
     end
+
+    private
 
     def execute(count: false, paginate: false)
       begin
@@ -77,22 +78,16 @@ module ElasticQueue
       search.with_indifferent_access
     end
 
-    private
-
     # this allows you to chain scopes
     # the 2+ scopes in the chain will be called
     # on a query object and not on the base object
+    # TODO: remove if not using
     def method_missing(method, *args, &block)
       if @queue.respond_to?(method)
         proc = @queue.scopes[method]
         instance_exec *args, &proc
       end
     end
-
-    # def execute_all_query(count: false)
-    #   search_type = count ? 'count' : 'query_then_fetch'
-    #   @queue.search_client.search index: @queue.index_name, body: body, search_type: search_type
-    # end
 
     def execute_all_query(count: false)
       record_count = @queue.search_client.search index: @queue.index_name, body: body, search_type: 'count'
