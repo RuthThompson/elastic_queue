@@ -9,8 +9,20 @@ module ElasticQueue
     end
 
     module ClassMethods
+
+      # TODO: change to reader only once we stop using it
       def queues(*queues)
-        @queues ||= queues
+        @queues ||= []
+        @queues += queues
+        @queues.uniq!
+        @queues
+      end
+
+      def add_queue(queue)
+        @queues ||= []
+        @queues << queue
+        @queues.uniq!
+        @queues
       end
 
       def queue_classes

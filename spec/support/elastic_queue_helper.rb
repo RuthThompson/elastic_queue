@@ -8,9 +8,7 @@ module ElasticQueueHelper
   end
 
   def create_index(index_name)
-    if test_search_client.indices.exists index: index_name
-      delete_index(index_name)
-    end
+    delete_index(index_name)
     test_search_client.indices.create index: index_name
   end
 

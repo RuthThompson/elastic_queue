@@ -14,6 +14,11 @@ module ElasticQueue
 
     def self.models(*models)
       @models = models
+      tell_models
+    end
+
+    def self.tell_models
+      model_classes.each { |klass| klass.send(:add_queue, to_s.underscore.to_sym) }
     end
 
     def self.model_names

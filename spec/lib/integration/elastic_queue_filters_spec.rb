@@ -4,7 +4,6 @@ describe 'ElasticQueue::Filters integration' do
   before :all do
     class Animal < ActiveRecord::Base
       include ElasticQueue::Queueable
-      queues :test_animals_queue
       queue_attributes :dangerous, :cute, :birthdate
       not_analyzed_queue_attributes :species, :description, :name
     end
@@ -12,7 +11,7 @@ describe 'ElasticQueue::Filters integration' do
     class TestAnimalsQueue < ElasticQueue::Base
       models :animal
     end
-  
+
     TestAnimalsQueue.create_index
     
     @create_animals = -> {
@@ -23,6 +22,9 @@ describe 'ElasticQueue::Filters integration' do
   end
 
   after :all do
+    [:Animal, :TestAnimalsQueue].each do |constant|
+      Object.send(:remove_const, constant)
+    end
     delete_index('test_animals_queue')
   end
 

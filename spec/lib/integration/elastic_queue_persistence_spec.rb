@@ -4,13 +4,18 @@ describe ElasticQueue::Persistence do
   before :all do
     class Animal < ActiveRecord::Base
       include ElasticQueue::Queueable
-      queues :test_animals_queue
       queue_attributes :dangerous, :cute, :birthdate
       not_analyzed_queue_attributes :species, :description, :name
     end
   
     class TestAnimalsQueue < ElasticQueue::Base
       models :animal
+    end
+  end
+
+  after :all do
+    [:Animal, :TestAnimalsQueue].each do |constant|
+      Object.send(:remove_const, constant)
     end
   end
 
