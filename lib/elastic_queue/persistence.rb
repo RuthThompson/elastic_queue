@@ -26,6 +26,8 @@ module ElasticQueue
         search_client.indices.refresh index: index_name
       end
 
+      # you can pass scopes into bulk_index to be used when fetching records
+      #  bulk_index(scopes: { some_model: [:scope1, :scope2], some_other_model: [:scope3] }) will fetch SomeModel.scope1.scope2 and SomeOtherModel.scope3 and index only those records.
       def bulk_index(scopes: {}, batch_size: 10_000)
         create_index unless index_exists?
         model_classes.each do |klass|
