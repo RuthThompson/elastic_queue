@@ -56,7 +56,9 @@ module ElasticQueue
             analysis: {
               analyzer: {
                 default: {
-                  type: :simple
+                  type: :custom,
+                  tokenizer: :whitespace,
+                  filter: [:lowercase]
                 }
               }
             }

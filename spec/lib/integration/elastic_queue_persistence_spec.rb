@@ -40,10 +40,13 @@ describe ElasticQueue::Persistence do
   end
 
   describe '#create_index' do
-    it 'sets the default analyzer to simple' do
+    it 'sets the default analyzer to use the whitespace tokenizer with the lowercase filter and no stopwords' do
       TestAnimalsQueue.create_index
       expect(`curl -XGET 'localhost:9200/test_animals_queue/_analyze?' -d 'AND OR'`)
       .to eq('{"tokens":[{"token":"and","start_offset":0,"end_offset":3,"type":"word","position":1},{"token":"or","start_offset":4,"end_offset":6,"type":"word","position":2}]}')
+
+      expect(`curl -XGET 'localhost:9200/test_animals_queue/_analyze?' -d 'under_scored_word'`)
+      .to eq('{"tokens":[{"token":"under_scored_word","start_offset":0,"end_offset":17,"type":"word","position":1}]}')
     end
   end
 

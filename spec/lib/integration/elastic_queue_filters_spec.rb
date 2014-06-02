@@ -4,8 +4,8 @@ describe 'ElasticQueue::Filters integration' do
   before :all do
     class Animal < ActiveRecord::Base
       include ElasticQueue::Queueable
-      queue_attributes :dangerous, :cute, :birthdate
-      not_analyzed_queue_attributes :species, :description, :name
+      queue_attributes :dangerous, :cute, :birthdate, :name
+      not_analyzed_queue_attributes :species, :description
     end
 
     class TestAnimalsQueue < ElasticQueue::Base
@@ -57,6 +57,12 @@ describe 'ElasticQueue::Filters integration' do
     it 'doesn\'t error if you try to filter on an nonexistent value' do
       @create_animals.call
       expect(TestAnimalsQueue.query.filter(likes_peanut_butter: true).all.map(&:name)).to eq []
+    end
+
+    it 'filters underscored values as one word' do
+      Animal.create({ name: 'pin_head' })
+      Animal.create({ name: 'pin' })
+      expect(TestAnimalsQueue.query.filter(name: 'pin').all.map(&:name)).to eq ['pin']
     end
 
     it 'automatically joins multiple filter values with an OR' do
