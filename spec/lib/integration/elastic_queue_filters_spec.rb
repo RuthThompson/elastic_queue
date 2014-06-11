@@ -65,6 +65,12 @@ describe 'ElasticQueue::Filters integration' do
       expect(TestAnimalsQueue.query.filter(name: 'pin').all.map(&:name)).to eq ['pin']
     end
 
+    it 'treats parentheses as letters' do
+      Animal.create({ name: 'Sr. Honks-a-lot' , species: '(Silly) Goose' })
+      expect(TestAnimalsQueue.query.filter(species: 'Goose').all.map(&:name)).to eq []
+      expect(TestAnimalsQueue.query.filter(species: '(Silly) Goose').all.map(&:name)).to eq ['Sr. Honks-a-lot']
+    end
+
     it 'automatically joins multiple filter values with an OR' do
       @create_animals.call
       expect(TestAnimalsQueue.query.filter(name: ['a', 'b']).all.map(&:name).sort).to eq ['a', 'b']
