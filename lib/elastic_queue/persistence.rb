@@ -52,7 +52,8 @@ module ElasticQueue
       end
 
       def default_index_settings
-        { settings: {
+        {
+          settings: {
             analysis: {
               analyzer: {
                 default: {
