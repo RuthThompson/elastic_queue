@@ -4,6 +4,7 @@ describe 'ElasticQueue::Filters integration' do
   before :all do
     class Animal < ActiveRecord::Base
       include ElasticQueue::Queueable
+      queues :test_animals_queue
       queue_attributes :dangerous, :cute, :birthdate, :name
       not_analyzed_queue_attributes :species, :description
     end
