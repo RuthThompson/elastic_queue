@@ -81,7 +81,6 @@ module ElasticQueue
     # this allows you to chain scopes
     # the 2+ scopes in the chain will be called
     # on a query object and not on the base object
-    # TODO: remove if not using
     def method_missing(method, *args, &block)
       if @queue.respond_to?(method)
         proc = @queue.scopes[method]
