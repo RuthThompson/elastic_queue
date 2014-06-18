@@ -6,31 +6,31 @@ module ElasticQueue
     end
 
     def options_to_filters(options)
-      options.map { |k, v|
-        next join_options(k, v) if [:or, :and].include? k
-        option_to_filter(k, v)
-      }.flatten
+      options.map { |k, v| option_to_filter(k, v) }.flatten
     end
 
     private
 
     def option_to_filter(key, value)
       # return and_options(value) if key == :and
-      if value.is_a? Array
+      if [:or, :and].include?(key)
+        join_options(key, value)
+      elsif value.is_a? Array
         or_filter(key, value)
       elsif value.is_a? Hash
         comparison_filter(key, value)
       elsif value.nil?
+        # e.g. name: nil
         null_filter(key, value)
       else
+        # e.g. status: 'fresh'
         term_filter(key, value)
       end
     end
 
     def join_options(operator, options)
-      j = {}
-      j[operator] = options.reduce([]) { |a, option| a += options_to_filters(option) }
-      j
+      conditions = options.map { |o| options_to_filters(o) }.flatten
+      { operator => conditions }
     end
 
     def or_filter(term, values)
