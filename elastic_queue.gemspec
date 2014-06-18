@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'activerecord', '~>3.0'
   s.add_runtime_dependency 'elasticsearch', '~> 0.4'
   s.add_runtime_dependency 'will_paginate', '~> 3.0'
-  s.add_development_dependency 'activesupport', '~>3.0'
   s.add_development_dependency 'bundler', '~> 1.0'
   s.add_development_dependency 'rspec', '~> 2.6'
   s.add_development_dependency 'factory_girl', '~> 4.0'
