@@ -81,7 +81,7 @@ module ElasticQueue
 
       def upsert_model(instance)
         body = { doc: instance.indexed_for_queue, doc_as_upsert: true }
-        search_client.update index: index_name, id: instance.id, type: instance.class.to_s.underscore, body: body, refresh: true
+        search_client.update index: index_name, id: instance.id, type: instance.class.to_s.underscore, body: body, refresh: true, retry_on_conflict: 20
       end
 
       def remove_model(instance)
