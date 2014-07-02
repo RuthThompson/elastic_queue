@@ -1,13 +1,6 @@
 module ElasticQueue
   module Queueable
     extend ActiveSupport::Concern
-
-    included do
-      after_commit :index_for_queues, if: :persisted?
-      after_touch :index_for_queues, if: :persisted?
-      before_destroy :remove_from_queue_indices
-    end
-
     module ClassMethods
 
       def queues(*queues)

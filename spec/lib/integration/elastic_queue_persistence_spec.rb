@@ -6,6 +6,8 @@ describe ElasticQueue::Persistence do
       include ElasticQueue::Queueable
       queue_attributes :dangerous, :cute, :birthdate
       not_analyzed_queue_attributes :species, :description, :name
+      after_save :index_for_queues
+      before_destroy :remove_from_queue_indices
     end
   
     class TestAnimalsQueue < ElasticQueue::Base

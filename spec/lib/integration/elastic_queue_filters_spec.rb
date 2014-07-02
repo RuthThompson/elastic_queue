@@ -7,6 +7,8 @@ describe 'ElasticQueue::Filters integration' do
       queues :test_animals_queue
       queue_attributes :dangerous, :cute, :birthdate, :name
       not_analyzed_queue_attributes :species, :description
+      after_save :index_for_queues
+      before_destroy :remove_from_queue_indices
     end
 
     class TestAnimalsQueue < ElasticQueue::Base

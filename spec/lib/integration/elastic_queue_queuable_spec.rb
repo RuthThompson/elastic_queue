@@ -7,6 +7,8 @@ describe 'ElasticQueue::Queueable integration' do
       queues :test_animals_queue
       queue_attributes :dangerous, :cute, :birthdate
       not_analyzed_queue_attributes :species, :description, :name
+      after_save :index_for_queues
+      before_destroy :remove_from_queue_indices
     end
 
     class TestAnimalsQueue < ElasticQueue::Base
@@ -17,35 +19,6 @@ describe 'ElasticQueue::Queueable integration' do
   after :all do
     [:Animal, :TestAnimalsQueue].each do |constant|
       Object.send(:remove_const, constant)
-    end
-  end
-
-  describe 'callbacks' do
-    before :each do
-      TestAnimalsQueue.create_index
-      @fluffy = Animal.create({ name: 'Fluffy' })
-    end
-
-    after :each do
-      Animal.all.each(&:destroy)
-      delete_index('test_animals_queue')
-    end
-
-    it 'adds newly created models to the queue' do
-      # model was created in before block
-      expect(query_all('test_animals_queue')['hits']['hits'].first['_source']['name']).to eq 'Fluffy'
-    end
-
-    it 'deletes deleted models from the queue' do
-      Animal.find(@fluffy.id).destroy
-      refresh_index('test_animals_queue')
-      expect(query_all('test_animals_queue')['hits']['total']).to be 0
-    end
-
-    it 'updates a changed model in the queue' do
-      @fluffy.update_attributes(name: 'Muffy')
-      refresh_index('test_animals_queue')
-      expect(query_all('test_animals_queue')['hits']['hits'].first['_source']['name']).to eq 'Muffy'
     end
   end
 

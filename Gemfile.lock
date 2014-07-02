@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    elastic_queue (0.0.12)
+    elastic_queue (0.0.13)
       activerecord (~> 3.0)
       activesupport (~> 3.0)
       elasticsearch (~> 0.4)
@@ -63,7 +63,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport (~> 3.0)
   bundler (~> 1.0)
   debugger (~> 1.6)
   elastic_queue!
