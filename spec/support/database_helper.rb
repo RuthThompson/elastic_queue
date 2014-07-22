@@ -23,6 +23,14 @@ class DatabaseHelper
         t.boolean  :cute
         t.text     :description
       end
+
+      create_table :plants do |t|
+        t.string   :name
+        t.string   :species
+        t.boolean  :poisonous
+        t.boolean  :edible
+        t.text     :description
+      end
     end
   end
 
@@ -30,6 +38,11 @@ class DatabaseHelper
     if ActiveRecord::Base.connection.table_exists? 'animals'
       ActiveRecord::Migration.class_eval do
         drop_table :animals
+      end
+    end
+    if ActiveRecord::Base.connection.table_exists? 'plants'
+      ActiveRecord::Migration.class_eval do
+        drop_table :plants
       end
     end
   end
