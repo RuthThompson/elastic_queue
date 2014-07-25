@@ -13,7 +13,7 @@ module ElasticQueue
 
     def option_to_filter(key, value)
       # return and_options(value) if key == :and
-      if [:or, :and].include?(key)
+      if [:or, :and, :not].include?(key)
         join_options(key, value)
       elsif value.is_a? Array
         or_filter(key, value)
@@ -30,7 +30,7 @@ module ElasticQueue
 
     def join_options(operator, options)
       conditions = options.map { |o| options_to_filters(o) }.flatten
-      { operator => conditions }
+      operator == :not ? { not: { filter: { and: conditions } } } : { operator => conditions }
     end
 
     def or_filter(term, values)

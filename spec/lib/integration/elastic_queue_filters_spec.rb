@@ -41,6 +41,11 @@ describe 'ElasticQueue::Filters integration' do
       expect(TestAnimalsQueue.query.filter(name: 'a').all.map(&:name)).to eq ['a']
     end
 
+    it 'can filter out one value' do
+      @create_animals.call
+      expect(TestAnimalsQueue.query.filter(not: [ { name: 'a'} ]).all.map(&:name).sort).to eq ['b', 'c']
+    end
+
     it 'can filter by a less than or greater than a time' do
       @create_animals.call
       expect(TestAnimalsQueue.query.filter(birthdate: { after: Date.today - 1.year - 1.day }).all.map(&:name)).to eq ['a']
@@ -110,16 +115,41 @@ describe 'ElasticQueue::Filters integration' do
         # (rusty, killer, speedy) && ( rusty || lucky, killer, old bess, cock-a-doodle-doo)
         name: ['rusty', 'killer', 'speedy'], #(rusty, killer, speedy) && (
         or: [
-            and: [ # rusty ||
-              { species: ['dog', 'mountain lion'] },
-              { dangerous: false }
-            ],
-            or: [ #speedy, killer, old bess, cock-a-doodle-doo )
-              { species: ['horse', 'chicken'] },
-              { dangerous: true }
+               and: [ # rusty ||
+                      { species: ['dog', 'mountain lion'] },
+                      { dangerous: false }
+                    ],
+               or: [ #speedy, killer, old bess, cock-a-doodle-doo )
+                     { species: ['horse', 'chicken'] },
+                     { dangerous: true }
+                   ]
             ]
-          ]
       }).all.map(&:name).sort).to eq ['killer', 'rusty', 'speedy']
+    end
+
+    it 'can nest multiple ands and ors and nots' do
+      Animal.create({ name: 'rusty', species: 'dog', dangerous: false })
+      Animal.create({ name: 'killer', species: 'mountain lion', dangerous: true })
+      Animal.create({ name: 'cock-a-doodle-doo', species: 'chicken', dangerous: false })
+      Animal.create({ name: 'old bess', species: 'cow', dangerous: true })
+      Animal.create({ name: 'speedy', species: 'horse', dangerous: false })
+      expect(TestAnimalsQueue.query.filter({
+       #(rusty, killer, speedy, cock-a-doodle-doo) && (! rusty && (rusty || speedy, killer, old bess, cock-a-doodle-doo))
+        name: ['rusty', 'killer', 'speedy', 'cock-a-doodle-doo'], #(rusty, killer, speedy, cock-a-doodle-doo) && (
+        not: [ # ! rusty &&
+               { name: 'rusty' }
+             ],
+        or: [
+               and: [ # (rusty ||
+                      { species: ['dog', 'mountain lion'] },
+                      { dangerous: false }
+                    ],
+               or: [ #speedy, killer, old bess, cock-a-doodle-doo ))
+                     { species: ['horse', 'chicken'] },
+                     { not: [ { dangerous: false } ] },
+                   ]
+            ]
+      }).all.map(&:name).sort).to eq ['cock-a-doodle-doo', 'killer', 'speedy']
     end
   end
 end
